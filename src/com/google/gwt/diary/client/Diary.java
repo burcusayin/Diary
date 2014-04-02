@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 
@@ -40,14 +41,25 @@ public class Diary implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		final Button saveButton = new Button("Save");
+		final Button submitButton = new Button("Submit");
 		final Label errorLabel = new Label();
 		
 		final RichTextArea area = new RichTextArea();
-		RichTextToolbar toolbar = new RichTextToolbar(area);
+		final RichTextToolbar toolbar = new RichTextToolbar(area);
+		
+
+		final TextBox username = new TextBox();
+		username.setText("Username");
+		final TextBox password = new TextBox();
+		password.setText("Password");
+		
+		
 		
 		// We can add style names to widgets
 		saveButton.addStyleName("saveButton");
-
+		submitButton.addStyleName("submitButton");
+		
+		
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
 		RootPanel.get("textArea").add(area);
@@ -55,9 +67,18 @@ public class Diary implements EntryPoint {
 		RootPanel.get("saveButtonContainer").add(saveButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 
+	
+		RootPanel.get("usernameContainer").add(username);
+		RootPanel.get("passwordContainer").add(password);
+		RootPanel.get("submitButtonContainer").add(submitButton);		
+	
+		
 		// Focus the cursor on the name field when the app loads
-		area.setFocus(true);
-
+		username.setFocus(true);
+		password.setFocus(true);
+		submitButton.setEnabled(true);
+		submitButton.setFocus(true);
+		
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
@@ -69,7 +90,7 @@ public class Diary implements EntryPoint {
 		final HTML serverResponseLabel = new HTML();
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<b>Sending diary to the server:</b>"));
+		dialogVPanel.add(new HTML("<b>Sending to the server:</b>"));
 		dialogVPanel.add(textToServerLabel);
 		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
 		dialogVPanel.add(serverResponseLabel);
@@ -77,6 +98,97 @@ public class Diary implements EntryPoint {
 		dialogVPanel.add(closeButton);
 		dialogBox.setWidget(dialogVPanel);
 
+		
+	    area.setVisible(false);
+		toolbar.setVisible(false);
+	    saveButton.setVisible(false);
+	    
+	    
+			
+		submitButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				dialogBox.hide();
+			    submitButton.setEnabled(true);
+				submitButton.setFocus(true);
+					
+			}
+		});
+		
+		class MyHandlerLogin implements ClickHandler, KeyUpHandler {
+			/**
+			 * Fired when the user clicks on the sendButton.
+			 */
+
+			public void onClick(ClickEvent event) {
+				sendLoginInfosToServer();
+			}
+
+			/**
+			 * Fired when the user types in the nameField.
+			 */
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					sendLoginInfosToServer();
+				}
+			}
+			
+			private void sendLoginInfosToServer()
+			{
+				String nameToServer = username.getText();
+				String passwordToServer = password.getText();
+				
+				errorLabel.setText("");
+				username.setText("");
+				password.setText("");
+
+				boolean result1 = isNameValid(nameToServer,errorLabel);
+				boolean result2 = isPasswordValid(passwordToServer,errorLabel);
+				
+				if(result1 && result2)
+				{
+					submitButton.setEnabled(false);
+					textToServerLabel.setText(nameToServer + "  " + passwordToServer);
+					serverResponseLabel.setText("");
+					greetingService.greetServer(nameToServer,
+							new AsyncCallback<String>() {
+								public void onFailure(Throwable caught) {
+									// Show the RPC error message to the user
+									dialogBox
+											.setText("Remote Procedure Call - Failure");
+									serverResponseLabel
+											.addStyleName("serverResponseLabelError");
+									serverResponseLabel.setHTML(SERVER_ERROR);
+									dialogBox.center();
+									closeButton.setFocus(true);
+								}
+
+								public void onSuccess(String result) {
+									dialogBox.setText("Remote Procedure Call");
+									serverResponseLabel
+											.removeStyleName("serverResponseLabelError");
+									serverResponseLabel.setHTML(result);
+									dialogBox.center();
+									closeButton.setFocus(true);
+								}
+							});
+					username.setVisible(false);
+					password.setVisible(false);
+					submitButton.setVisible(false);
+				    area.setVisible(true);
+				    toolbar.setVisible(true);
+				    saveButton.setVisible(true);
+				}
+				else
+				{
+					errorLabel.setText("Please, fill the areas!");
+				}
+				
+				errorLabel.setText("");
+			}
+		}
+		
+		area.setFocus(true);
+		
 		// Add a handler to close the DialogBox
 		closeButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -91,6 +203,7 @@ public class Diary implements EntryPoint {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
+
 			public void onClick(ClickEvent event) {
 				sendDiaryToServer();
 			}
@@ -141,13 +254,18 @@ public class Diary implements EntryPoint {
 							}
 						});
 				}
+				}	
+			
 			}
-		}
-
-		// Add a handler to send the name to the server
-		MyHandler handler = new MyHandler();
-		saveButton.addClickHandler(handler);
-		area.addKeyUpHandler(handler);
+			// Add a handler to send the name to the server
+			MyHandler handler = new MyHandler();
+			saveButton.addClickHandler(handler);
+			area.addKeyUpHandler(handler);
+			
+			MyHandlerLogin login = new MyHandlerLogin();
+			submitButton.addClickHandler(login);
+			username.addKeyUpHandler(login);
+			password.addKeyUpHandler(login);
 	}
 	
 	public boolean isItEmpty(RichTextArea text, Label label)
@@ -163,4 +281,30 @@ public class Diary implements EntryPoint {
 		}
 	}
 	
+	public boolean isNameValid(String text, Label label)
+	{
+
+		if (!FieldVerifier.isValidName(text)) {
+			label.setText("Name area cannot be empty!");
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	public boolean isPasswordValid(String text, Label label)
+	{
+
+		if (!FieldVerifier.isValidName(text)) {
+			label.setText("Password area cannot be empty!");
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+		
+	}
 }
