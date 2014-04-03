@@ -105,6 +105,7 @@ public class Diary implements EntryPoint {
 		RootPanel.get("twitter").setVisible(false);	    
 		RootPanel.get("mail").setVisible(false);		    
 			
+
 		
 		submitButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
