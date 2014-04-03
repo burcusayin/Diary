@@ -104,7 +104,6 @@ public class Diary implements EntryPoint {
 		RootPanel.get("facebook").setVisible(false);
 		RootPanel.get("twitter").setVisible(false);	    
 		RootPanel.get("mail").setVisible(false);		    
-
 	
 		
 		submitButton.addClickHandler(new ClickHandler() {
