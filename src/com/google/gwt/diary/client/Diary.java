@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 
@@ -40,14 +41,25 @@ public class Diary implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		final Button saveButton = new Button("Save");
+		final Button submitButton = new Button("Submit");
 		final Label errorLabel = new Label();
 		
 		final RichTextArea area = new RichTextArea();
-		RichTextToolbar toolbar = new RichTextToolbar(area);
+		final RichTextToolbar toolbar = new RichTextToolbar(area);
+		
+
+		final TextBox username = new TextBox();
+		username.setText("Username");
+		final TextBox password = new TextBox();
+		password.setText("Password");
+		
+	
 		
 		// We can add style names to widgets
 		saveButton.addStyleName("saveButton");
-
+		submitButton.addStyleName("submitButton");
+		
+		
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
 		RootPanel.get("textArea").add(area);
@@ -55,9 +67,17 @@ public class Diary implements EntryPoint {
 		RootPanel.get("saveButtonContainer").add(saveButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 
+	
+		RootPanel.get("usernameContainer").add(username);
+		RootPanel.get("passwordContainer").add(password);
+		RootPanel.get("submitButtonContainer").add(submitButton);		
+		
+	
+		
 		// Focus the cursor on the name field when the app loads
 		area.setFocus(true);
 
+		
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
 		dialogBox.setText("Remote Procedure Call");
@@ -77,6 +97,29 @@ public class Diary implements EntryPoint {
 		dialogVPanel.add(closeButton);
 		dialogBox.setWidget(dialogVPanel);
 
+		
+	    area.setVisible(false);
+		toolbar.setVisible(false);
+	    saveButton.setVisible(false);
+		RootPanel.get("facebook").setVisible(false);
+		RootPanel.get("twitter").setVisible(false);	    
+		RootPanel.get("mail").setVisible(false);		    
+			
+		submitButton.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				username.setVisible(false);
+				password.setVisible(false);
+				submitButton.setVisible(false);
+			    area.setVisible(true);
+			    toolbar.setVisible(true);
+			    saveButton.setVisible(true);
+				RootPanel.get("facebook").setVisible(true);
+				RootPanel.get("twitter").setVisible(true);	
+				RootPanel.get("mail").setVisible(true);					
+			}
+		});
+		
+		
 		// Add a handler to close the DialogBox
 		closeButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
