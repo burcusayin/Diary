@@ -1,10 +1,10 @@
 package com.google.gwt.diary.server;
-
+ 
 import com.google.gwt.diary.client.GreetingService;
+import com.google.gwt.diary.server.model.DiaryProperties;
+import com.google.gwt.diary.server.model.Person;
 import com.google.gwt.diary.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
-
-import com.google.gwt.diary.server.model.*;
 
 /**
  * The server-side implementation of the RPC service.
@@ -12,66 +12,50 @@ import com.google.gwt.diary.server.model.*;
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
-
-	public String greetServer(String input) throws IllegalArgumentException {
-		// Verify that the input is valid. 
-		if (!FieldVerifier.isValidName(input)) {
-			// If the input is not valid, throw an IllegalArgumentException back to
-			// the client.
-			throw new IllegalArgumentException(
-					"You should write something!");
-		}
-
-		String serverInfo = getServletContext().getServerInfo();
-		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-
-		// Escape data from the client to avoid cross-site script vulnerabilities.
-		input = escapeHtml(input);
-		userAgent = escapeHtml(userAgent);
-
-		return "Hello! " + "!<br><br>I am running " + serverInfo 
-				+ ".<br><br>It looks like you are using:<br>" + userAgent;
-	}
 	
 	public String takeDiary(String input) throws IllegalArgumentException {
-		// Verify that the input is valid. 
-		if (!FieldVerifier.isValidName(input)) {
-			// If the input is not valid, throw an IllegalArgumentException back to
-			// the client.
-			throw new IllegalArgumentException(
-					"You should write something for your diary!");
-		}
-
-
+		String result = null;
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		input = escapeHtml(input);
 
-		DiaryProperties diary = new DiaryProperties(input);
+		boolean res = isItValid(input);
+		if(res)
+		{
+			DiaryProperties diary = new DiaryProperties();
+			diary.setContent(input);
+			result = "OK";
+		}
+		else
+		{
+			result = "FAIL";
+		}
 		
-		return diary.getContent();
+		return result;
 	}
 	
-	public String takeLogin(String input) throws IllegalArgumentException {
-		// Verify that the input is valid. 
-		if (!FieldVerifier.isValidName(input)) {
-			// If the input is not valid, throw an IllegalArgumentException back to
-			// the client.
-			throw new IllegalArgumentException(
-					"You should write something for your username and password!");
-		}
-
-
+	public String takeLogin(String input1, String input2) throws IllegalArgumentException {
+		
+		String result = null;
 		// Escape data from the client to avoid cross-site script vulnerabilities.
-		input = escapeHtml(input);
+		input1 = escapeHtml(input1);
+		input2 = escapeHtml(input2);
 		
-		String[] ar = null;
-		ar = input.split(" ");
+		boolean res1 = isItValid(input1);
+		boolean res2 = isItValid(input2);
 		
-		Person person = new Person();
-		person.setUserName(ar[0]);
-		person.setPassword(ar[1]);
+		if( res1 && res2)
+		{
+			Person person = new Person();
+			person.setUserName(input1);
+			person.setPassword(input2);
+			result = "OK";
+		}
+		else
+		{
+			result = "FAIL";
+		}
 		
-		return person.getName() + " " + person.getPassword();
+		return result;
 	}
 	
 
@@ -88,5 +72,17 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		}
 		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
 				.replaceAll(">", "&gt;");
+	}
+
+	public boolean isItValid(String text)
+	{
+		if (!FieldVerifier.isValidName(text)) 
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 }

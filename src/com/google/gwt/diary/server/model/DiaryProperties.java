@@ -7,20 +7,29 @@ public class DiaryProperties {
 	String title;
 	String content;
 	int diaryId;
+	Person person;
 	
-	public DiaryProperties( String date, String time, String title, int diaryId, String content)
+	public DiaryProperties( String date, String time, String title, int diaryId, String content, Person author)
 	{
 		this.date = date;
 		this.time = time;
 		this.title = title;
 		this.diaryId = diaryId;
 		this.content = content;
+		this.person = author;
 		
 	}
 	
-	public DiaryProperties(String content)
+	public DiaryProperties()
 	{
-		this.content = content;
+	}
+	
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
 	}
 
 	public String getDate() {
@@ -63,6 +72,4 @@ public class DiaryProperties {
 		this.content = content;
 	}
 	
-	
-
 }

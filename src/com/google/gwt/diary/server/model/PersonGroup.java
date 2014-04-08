@@ -1,5 +1,5 @@
 package com.google.gwt.diary.server.model;
-
+ 
 public class PersonGroup extends Person{
 
 	String groupName;
@@ -26,9 +26,5 @@ public class PersonGroup extends Person{
 	public void setGroupType(String groupType) {
 		this.groupType = groupType;
 	}
-	
-	
-	
-
 	
 }
