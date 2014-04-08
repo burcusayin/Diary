@@ -1,6 +1,8 @@
 package com.google.gwt.diary.server;
-
+ 
 import com.google.gwt.diary.client.GreetingService;
+import com.google.gwt.diary.server.model.DiaryProperties;
+import com.google.gwt.diary.server.model.Person;
 import com.google.gwt.diary.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -17,7 +19,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 			// If the input is not valid, throw an IllegalArgumentException back to
 			// the client.
 			throw new IllegalArgumentException(
-					"You should write something for your diary!");
+					"You should write something!");
 		}
 
 		String serverInfo = getServletContext().getServerInfo();
@@ -27,9 +29,57 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		input = escapeHtml(input);
 		userAgent = escapeHtml(userAgent);
 
-		return "Hello! " + "!<br><br>I am running " + serverInfo + "<br> I take your diary! It's like this:  <br>" + input
+		return "Hello! " + "!<br><br>I am running " + serverInfo 
 				+ ".<br><br>It looks like you are using:<br>" + userAgent;
 	}
+	
+	public String takeDiary(String input) throws IllegalArgumentException {
+		String result = null;
+		// Escape data from the client to avoid cross-site script vulnerabilities.
+		input = escapeHtml(input);
+
+		boolean res = isItValid(input);
+		if(res)
+		{
+			DiaryProperties diary = new DiaryProperties(input);
+			result = "OK";
+		}
+		else
+		{
+			result = "FAIL";
+		}
+		
+		return result;
+	}
+	
+	
+	public String takeLogin(String input1, String input2) throws IllegalArgumentException {
+		
+		String result = null;
+		// Escape data from the client to avoid cross-site script vulnerabilities.
+		input1 = escapeHtml(input1);
+		input2 = escapeHtml(input2);
+		
+
+		
+		boolean res1 = isItValid(input1);
+		boolean res2 = isItValid(input2);
+		
+		if( res1 && res2)
+		{
+			Person person = new Person();
+			person.setUserName(input1);
+			person.setPassword(input2);
+			result = "OK";
+		}
+		else
+		{
+			result = "FAIL";
+		}
+		
+		return result;
+	}
+	
 
 	/**
 	 * Escape an html string. Escaping data received from the client helps to
@@ -44,5 +94,18 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		}
 		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
 				.replaceAll(">", "&gt;");
+	}
+
+	
+	public boolean isItValid(String text)
+	{
+		if (!FieldVerifier.isValidName(text)) 
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 }

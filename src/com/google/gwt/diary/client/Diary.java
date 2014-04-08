@@ -1,6 +1,5 @@
-package com.google.gwt.diary.client;
+package com.google.gwt.diary.client; 
 
-import com.google.gwt.diary.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -8,15 +7,18 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
+
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -40,6 +42,7 @@ public class Diary implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
+		
 		final Button saveButton = new Button("Save");
 		final Button submitButton = new Button("Submit");
 		final Label errorLabel = new Label();
@@ -52,8 +55,7 @@ public class Diary implements EntryPoint {
 		username.setText("Username");
 		final TextBox password = new TextBox();
 		password.setText("Password");
-		
-	
+
 		
 		// We can add style names to widgets
 		saveButton.addStyleName("saveButton");
@@ -71,12 +73,13 @@ public class Diary implements EntryPoint {
 		RootPanel.get("usernameContainer").add(username);
 		RootPanel.get("passwordContainer").add(password);
 		RootPanel.get("submitButtonContainer").add(submitButton);		
-		
 	
 		
 		// Focus the cursor on the name field when the app loads
-		area.setFocus(true);
-
+		username.setFocus(true);
+		password.setFocus(true);
+		submitButton.setEnabled(true);
+		submitButton.setFocus(true);
 		
 		// Create the popup dialog box
 		final DialogBox dialogBox = new DialogBox();
@@ -89,7 +92,7 @@ public class Diary implements EntryPoint {
 		final HTML serverResponseLabel = new HTML();
 		VerticalPanel dialogVPanel = new VerticalPanel();
 		dialogVPanel.addStyleName("dialogVPanel");
-		dialogVPanel.add(new HTML("<b>Sending diary to the server:</b>"));
+		dialogVPanel.add(new HTML("<b>Sending to the server:</b>"));
 		dialogVPanel.add(textToServerLabel);
 		dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
 		dialogVPanel.add(serverResponseLabel);
@@ -101,26 +104,109 @@ public class Diary implements EntryPoint {
 	    area.setVisible(false);
 		toolbar.setVisible(false);
 	    saveButton.setVisible(false);
-		RootPanel.get("facebook").setVisible(false);
-		RootPanel.get("twitter").setVisible(false);	    
-		RootPanel.get("mail").setVisible(false);		    
-	
-
-		
+	   
+	    
+			
 		submitButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				username.setVisible(false);
-				password.setVisible(false);
-				submitButton.setVisible(false);
-			    area.setVisible(true);
-			    toolbar.setVisible(true);
-			    saveButton.setVisible(true);
-				RootPanel.get("facebook").setVisible(true);
-				RootPanel.get("twitter").setVisible(true);	
-				RootPanel.get("mail").setVisible(true);					
+				dialogBox.hide();
+			    submitButton.setEnabled(true);
+				submitButton.setFocus(true);
+					
 			}
 		});
 		
+		class MyHandlerLogin implements ClickHandler, KeyUpHandler {
+			/**
+			 * Fired when the user clicks on the sendButton.
+			 */
+
+			public void onClick(ClickEvent event) {
+				sendLoginInfosToServer();
+			}
+
+			/**
+			 * Fired when the user types in the nameField.
+			 */
+			public void onKeyUp(KeyUpEvent event) {
+				if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
+					sendLoginInfosToServer();
+				}
+			}
+			
+			
+			
+			private void sendLoginInfosToServer()
+			{
+				String nameToServer = username.getText();
+				String passwordToServer = password.getText();
+				
+				errorLabel.setText("");
+				username.setText("");
+				password.setText("");
+				
+
+				// //submitButton.setEnabled(false);
+				textToServerLabel.setText(nameToServer + "//!!//" + passwordToServer);
+				
+					
+				serverResponseLabel.setText("");
+				greetingService.takeLogin(nameToServer, passwordToServer,
+						new AsyncCallback<String>() {
+							public void onFailure(Throwable caught) {
+								Window.alert("RPC call fail! \n" + SERVER_ERROR);
+							}
+
+							public void onSuccess(String result) {
+								Window.alert("Result is: " + result);
+								System.out.println("Result is: " + result);
+								String res = "OK";
+								if(result.equalsIgnoreCase(res))
+								{
+									dialogBox.setText("Remote Procedure Call");
+									serverResponseLabel
+											.removeStyleName("serverResponseLabelError");
+									serverResponseLabel.setHTML(result);
+									dialogBox.center();
+									closeButton.setFocus(true);
+									
+									username.setVisible(false);
+									password.setVisible(false);
+									submitButton.setVisible(false);
+								    area.setVisible(true);
+								    toolbar.setVisible(true);
+								    saveButton.setVisible(true);
+								    
+								    		
+								    String html =	"<a id='facebook' href='http://www.facebook.com/sharer.php?u=http://127.0.0.1:8888/Diary.html?gwt.codesvr=127.0.0.1:9997' target='_blank'  >"
+								    		    +  "<img src='http://www.simplesharebuttons.com/images/somacro/facebook.png' alt='Facebook' /></a>"
+								    
+								                +  "<a id='twitter' href='http://twitter.com/share?text=&url=http://127.0.0.1:8888/Diary.html?gwt.codesvr=127.0.0.1:9997' target='_blank'  >"
+								    		    +  "<img src='http://www.simplesharebuttons.com/images/somacro/twitter.png' alt='Twitter' /></a>"
+								    		
+								    		
+								    
+								                +  "<a id='mail' href='mailto:?Body=' >"
+								    		    +  "<img src='http://www.simplesharebuttons.com/images/somacro/email.png' alt='Email' /></a>";
+								    
+								    
+								    HTMLPanel panel = new HTMLPanel(html);								    
+								    panel.setSize("200px", "120px");
+								    RootPanel.get("plugin").add(panel);
+
+								}
+								else
+								{
+									Window.alert("Something went wrong!");
+									submitButton.setEnabled(true);
+								}
+							}
+							});
+				errorLabel.setText("");
+			}
+		}
+		
+		area.setFocus(true);
 		
 		// Add a handler to close the DialogBox
 		closeButton.addClickHandler(new ClickHandler() {
@@ -136,6 +222,7 @@ public class Diary implements EntryPoint {
 			/**
 			 * Fired when the user clicks on the sendButton.
 			 */
+
 			public void onClick(ClickEvent event) {
 				sendDiaryToServer();
 			}
@@ -155,57 +242,50 @@ public class Diary implements EntryPoint {
 			private void sendDiaryToServer() {
 				// First, we validate the input.
 				errorLabel.setText("");
-				String textToServer = area.getText();
 				
-				if(isItEmpty(area,errorLabel))
-				{
+				String textToServer = area.getText();
+
 				// Then, we send the input to the server.
-				saveButton.setEnabled(false);
+				// // saveButton.setEnabled(false);
 				textToServerLabel.setText(textToServer);
 				serverResponseLabel.setText("");
-				greetingService.greetServer(textToServer,
+				greetingService.takeDiary(textToServer,
 						new AsyncCallback<String>() {
 							public void onFailure(Throwable caught) {
-								// Show the RPC error message to the user
-								dialogBox
-										.setText("Remote Procedure Call - Failure");
-								serverResponseLabel
-										.addStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(SERVER_ERROR);
-								dialogBox.center();
-								closeButton.setFocus(true);
+								Window.alert("RPC call fail! \n" + SERVER_ERROR);
 							}
 
 							public void onSuccess(String result) {
-								dialogBox.setText("Remote Procedure Call");
-								serverResponseLabel
-										.removeStyleName("serverResponseLabelError");
-								serverResponseLabel.setHTML(result);
-								dialogBox.center();
-								closeButton.setFocus(true);
+								String res = "OK";
+								Window.alert("Result is: " + result);
+								if(result.equalsIgnoreCase(res))
+								{
+									dialogBox.setText("Remote Procedure Call");
+									serverResponseLabel
+									.removeStyleName("serverResponseLabelError");
+									serverResponseLabel.setHTML(result);
+									dialogBox.center();
+									closeButton.setFocus(true);
+								}
+								else
+								{
+									Window.alert("Something went wrong!");
+									saveButton.setEnabled(true);
+								}
 							}
 						});
 				}
-			}
-		}
-
-		// Add a handler to send the name to the server
-		MyHandler handler = new MyHandler();
-		saveButton.addClickHandler(handler);
-		area.addKeyUpHandler(handler);
+			}	
+			
+			
+			// Add a handler to send the name to the server
+			MyHandler handler = new MyHandler();
+			saveButton.addClickHandler(handler);
+			area.addKeyUpHandler(handler);
+			
+			MyHandlerLogin login = new MyHandlerLogin();
+			submitButton.addClickHandler(login);
+			username.addKeyUpHandler(login);
+			password.addKeyUpHandler(login);
 	}
-	
-	public boolean isItEmpty(RichTextArea text, Label label)
-	{
-		String textContent = text.getText();
-		if (!FieldVerifier.isValidName(textContent)) {
-			label.setText("Please write something for your diary!");
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	}
-	
 }

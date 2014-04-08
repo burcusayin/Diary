@@ -1,0 +1,2 @@
+serviceClass: com.google.gwt.diary.client.GreetingService
+path: 1F1C9AEB908CB6C1634E36FC2034438D.gwt.rpc
