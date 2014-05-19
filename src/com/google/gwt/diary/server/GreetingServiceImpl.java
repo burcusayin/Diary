@@ -1,10 +1,23 @@
 package com.google.gwt.diary.server;
  
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+
+import model.Diary;
+import model.Person;
+
+import org.apache.commons.lang3.time.DateUtils;
+
 import com.google.gwt.diary.client.GreetingService;
-import com.google.gwt.diary.server.model.DiaryProperties;
-import com.google.gwt.diary.server.model.Person;
+import com.google.gwt.diary.db.DatabaseController;
+import com.google.gwt.diary.db.dao.DiaryDAO;
+import com.google.gwt.diary.db.dao.DiaryDAOFactory;
+import com.google.gwt.diary.db.dao.PersonDAO;
+import com.google.gwt.diary.db.dao.PersonDAOFactory;
 import com.google.gwt.diary.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.ibm.icu.util.Calendar;
 
 /**
  * The server-side implementation of the RPC service.
@@ -13,7 +26,18 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
 	
+	DiaryDAO dDao = DiaryDAOFactory.getDiaryDAO();
+	private long diaryID;
+	private String username;
+	
+	public GreetingServiceImpl(){
+		this.username = null;
+		this.diaryID = dDao.getMaxDiaryId();
+	}
+	
 	public String takeDiary(String input) throws IllegalArgumentException {
+		PersonDAO pDao = PersonDAOFactory.getPersonDAO();
+		Person person = new Person();
 		String result = null;
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		input = escapeHtml(input);
@@ -21,9 +45,38 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		boolean res = isItValid(input);
 		if(res)
 		{
-			DiaryProperties diary = new DiaryProperties();
-			diary.setContent(input);
-			result = "OK";
+			Diary d = new Diary();
+			d.setContent(input);
+			System.out.println("username at takeDiary : " + this.username);
+			String uname = this.username;
+			if(uname != null)
+			{
+				person = pDao.getPersonByUsername(uname);
+				d.setPerson(person);
+				//date
+				d.setDiaryDate(Calendar.getInstance().getTime()); 
+				// time
+				java.util.Date date= new java.util.Date(); 
+				Date newDate = DateUtils.addHours(date, 3); 
+				newDate = DateUtils.addDays(newDate, -1); 
+				d.setDiaryTime(new Timestamp(newDate.getTime()));
+				
+				d.setTitle("Diary " + diaryID);
+				this.diaryID = diaryID + 1;
+				d.setDiaryId(diaryID);
+				
+				int resultForInsert = dDao.insertDiary(d);
+				if (resultForInsert==1){
+					System.out.println("diary added!!");
+				}else{ 
+					System.out.println("Can not be added");
+				}	
+				result = "OK";
+			}
+			else
+			{
+				result = "NoUser";
+			}
 		}
 		else
 		{
@@ -33,9 +86,51 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		return result;
 	}
 	
-	public String takeLogin(String input1, String input2) throws IllegalArgumentException {
+	public ArrayList<ArrayList<String>> viewDiary() throws IllegalArgumentException 
+	{
+		ArrayList<Diary> dList = new ArrayList<Diary>();
+		ArrayList<ArrayList<String>> listt = new ArrayList<ArrayList<String>>();
+		int i = 0;
+		ArrayList<String> strList;
+		dList = dDao.getDiaryByUsername(this.username);
 		
-		String result = null;
+		if(!dList.isEmpty())
+		{
+			int l = dList.size();
+			while(i != l)
+			{
+				strList = new ArrayList<String>();
+				String id = "" + dList.get(i).getDiaryId();
+				String title = "" + dList.get(i).getTitle();
+				String date = "" + dList.get(i).getDiaryDate();
+				String time = "" + dList.get(i).getDiaryTime();
+				String uname = "" + dList.get(i).getPerson().getUsername();
+				
+				strList.add(id);
+				strList.add(title);
+				strList.add(date);
+				strList.add(time);
+				strList.add(uname);
+				listt.add(strList);
+				
+				i++;
+			}
+		}
+		return listt;
+	}
+	
+	public String showDiaryContent(int id) throws IllegalArgumentException {
+		
+		Diary d = dDao.getDiaryById(id);
+		String content = d.getContent();
+		System.out.println("Impl sýnýfýnda gelen content: " + content + "\n");
+		return content;
+		
+	}
+	
+	public ArrayList<String> takeLogin(String input1, String input2) throws IllegalArgumentException {
+		
+		ArrayList<String> result = new ArrayList<>();
 		// Escape data from the client to avoid cross-site script vulnerabilities.
 		input1 = escapeHtml(input1);
 		input2 = escapeHtml(input2);
@@ -45,20 +140,47 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		
 		if( res1 && res2)
 		{
-			Person person = new Person();
-			person.setUserName(input1);
-			person.setPassword(input2);
-			result = "OK";
+			DatabaseController dbc = new DatabaseController();
+			String data = dbc.verifyLoginEntries(input1, input2);
+			result.add("OK");
+			result.add(data);
+			
+			if(data.equalsIgnoreCase("Username and password are true ")){
+				this.username = input1;
+			}
 		}
 		else
 		{
-			result = "FAIL";
+			result.add("FAIL");
 		}
 		
 		return result;
 	}
 	
-
+	public String takeNewAccount(ArrayList<String> list) throws IllegalArgumentException {
+		
+		DatabaseController dbc = new DatabaseController();
+		String flag = null;
+		String username = list.get(0);
+		String password = list.get(1);
+		String name = list.get(2);
+		String surname = list.get(3);
+		String phone = list.get(4);
+		String email = list.get(5);
+		String address = list.get(6);
+		Boolean result = dbc.addNewAccount(username, password, name, surname, phone, email, address);
+		
+		if(result)
+		{
+			flag = "OK";
+		}
+		else
+		{
+			flag = "FAIL";
+		}
+		return flag;
+	}
+	
 	/**
 	 * Escape an html string. Escaping data received from the client helps to
 	 * prevent cross-site script vulnerabilities.

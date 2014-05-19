@@ -1,5 +1,7 @@
 package com.google.gwt.diary;
 
+import java.util.ArrayList;
+
 import com.google.gwt.diary.server.GreetingServiceImpl;
 
 import org.junit.Test;
@@ -36,12 +38,12 @@ public class CheckDiary {
 	@Test
 	public void testLogin(){
 		
-		String result;
+		ArrayList<String> result = new ArrayList<>();
 		GreetingServiceImpl impl = new GreetingServiceImpl();
 		
 		result = impl.takeLogin("iyte", "ceng");
 		
-		if(result == "OK"){
+		if(result.get(0) == "OK"){
 			System.out.println("it is a valid login");
 		}
 		else{

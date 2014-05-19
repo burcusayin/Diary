@@ -16,6 +16,10 @@
     <url-pattern>/diary/greet</url-pattern>
   </servlet-mapping>
   
+  <session-config>
+   <session-timeout>5040</session-timeout> 
+</session-config>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>Diary.html</welcome-file>
