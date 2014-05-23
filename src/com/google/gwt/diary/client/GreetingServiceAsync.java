@@ -16,7 +16,16 @@ public interface GreetingServiceAsync {
 			throws IllegalArgumentException;
 	void viewDiary(AsyncCallback<ArrayList<ArrayList<String>>> callback)
 			throws IllegalArgumentException;
-	void showDiaryContent(int id, AsyncCallback<String> callback)
+	void showDiaryContent(Long id, AsyncCallback<String> callback)
 			throws IllegalArgumentException;
+	void takeNewHolder(ArrayList<String> str,AsyncCallback<String> callback)
+			throws IllegalArgumentException;
+	void logout(AsyncCallback<String> callback)
+			throws IllegalArgumentException;
+	void editDiary(Long diary_id, String input, AsyncCallback<String> callback)
+			throws IllegalArgumentException;
+	void deleteDiary(Long diary_id, AsyncCallback<String> callback) 
+			throws IllegalArgumentException;
+	
 }
 

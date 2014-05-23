@@ -15,6 +15,10 @@ import com.google.gwt.diary.db.dao.DiaryDAO;
 import com.google.gwt.diary.db.dao.DiaryDAOFactory;
 import com.google.gwt.diary.db.dao.PersonDAO;
 import com.google.gwt.diary.db.dao.PersonDAOFactory;
+import com.google.gwt.diary.db.dao.PropertyrightDAO;
+import com.google.gwt.diary.db.dao.PropertyrightDAOFactory;
+import com.google.gwt.diary.db.dao.PropertyrightholderDAO;
+import com.google.gwt.diary.db.dao.PropertyrightholderDAOFactory;
 import com.google.gwt.diary.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.ibm.icu.util.Calendar;
@@ -27,13 +31,21 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
 	
 	DiaryDAO dDao = DiaryDAOFactory.getDiaryDAO();
+	PropertyrightholderDAO prhDAO = PropertyrightholderDAOFactory.getPropertyrightholderDAO();
+	PropertyrightDAO prDAO = PropertyrightDAOFactory.getPropertyRightDAO();
+	
 	private long diaryID;
+	private long propertyrightholderID;
+	private long propertyrightID;
 	private String username;
 	
 	public GreetingServiceImpl(){
 		this.username = null;
 		this.diaryID = dDao.getMaxDiaryId();
+		this.propertyrightholderID = prhDAO.getMaxPropertyrightholderId();
+		this.propertyrightID = prDAO.getMaxPropertyrightId();
 	}
+	
 	
 	public String takeDiary(String input) throws IllegalArgumentException {
 		PersonDAO pDao = PersonDAOFactory.getPersonDAO();
@@ -57,8 +69,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 				d.setDiaryDate(Calendar.getInstance().getTime()); 
 				// time
 				java.util.Date date= new java.util.Date(); 
-				Date newDate = DateUtils.addHours(date, 3); 
-				newDate = DateUtils.addDays(newDate, -1); 
+				Date newDate = DateUtils.addHours(date, -9);  
 				d.setDiaryTime(new Timestamp(newDate.getTime()));
 				
 				d.setTitle("Diary " + diaryID);
@@ -103,7 +114,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 				String id = "" + dList.get(i).getDiaryId();
 				String title = "" + dList.get(i).getTitle();
 				String date = "" + dList.get(i).getDiaryDate();
-				String time = "" + dList.get(i).getDiaryTime();
+				String time = dList.get(i).getDiaryTime().toString();
 				String uname = "" + dList.get(i).getPerson().getUsername();
 				
 				strList.add(id);
@@ -119,7 +130,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		return listt;
 	}
 	
-	public String showDiaryContent(int id) throws IllegalArgumentException {
+	public String showDiaryContent(Long id) throws IllegalArgumentException {
 		
 		Diary d = dDao.getDiaryById(id);
 		String content = d.getContent();
@@ -181,6 +192,33 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		return flag;
 	}
 	
+	public String takeNewHolder(ArrayList<String> list) throws IllegalArgumentException {
+		
+		DatabaseController dbc = new DatabaseController();
+		String flag = null;
+		String name = list.get(0);
+		String surname = list.get(1);
+		String email = list.get(2);
+		String phone = list.get(3);
+		String type = list.get(4);
+		
+		this.propertyrightholderID = propertyrightholderID + 1;
+		this.propertyrightID = propertyrightID + 1;
+		
+		Boolean result1 = dbc.addNewHolder(propertyrightholderID, name, surname, email, phone);
+		Boolean result2 = dbc.addNewPropertyright(propertyrightID, type);
+		
+		if(result1 && result2)
+		{
+			flag = "OK";
+		}
+		else
+		{
+			flag = "FAIL";
+		}
+		return flag;
+	}
+	
 	/**
 	 * Escape an html string. Escaping data received from the client helps to
 	 * prevent cross-site script vulnerabilities.
@@ -206,5 +244,72 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 		{
 			return true;
 		}
+	}
+	
+	public String logout() throws IllegalArgumentException {
+		String result = null;
+
+		if(this.username != null)
+		{
+			this.username = null;
+			result = "OK";
+		}
+		else
+		{
+			result = "FAIL";
+		}
+		
+		return result;
+	}
+	
+	public String editDiary(Long diary_id, String input) throws IllegalArgumentException {
+
+		String result = null;
+		input = escapeHtml(input);
+
+		boolean res = isItValid(input);
+		if(res)
+		{
+			Diary d = new Diary();
+			d = dDao.getDiaryById(diary_id);
+			if(d != null)
+			{				
+				int resultForUpdate = dDao.updateDiary(diary_id, input);
+				if (resultForUpdate==1){
+					System.out.println("diary edited!!");
+				}else{ 
+					System.out.println("Can not be edited");
+				}	
+				result = "OK";
+			}
+			else
+			{
+				result = "NoDiary";
+			}
+		}
+		else
+		{
+			result = "FAIL";
+		}
+		
+		return result;
+	}
+	
+	public String deleteDiary(Long diary_id) throws IllegalArgumentException {
+
+		String res = null;
+		int result = dDao.deleteDiary(diary_id);
+
+		if(result==1)
+		{
+			System.out.println("Diary deleted");	
+			res = "OK";
+		}
+		else{
+			System.out.println("Diary cannot be deleted!");
+			res = "FAIL";
+		}
+		
+		return res;
 	}
 }

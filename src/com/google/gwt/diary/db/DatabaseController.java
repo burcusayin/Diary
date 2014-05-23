@@ -2,11 +2,21 @@ package com.google.gwt.diary.db;
 
 //import java.util.UUID; 
 
+import java.util.Calendar;
+
+import com.google.gwt.diary.db.dao.DiaryDAO;
+import com.google.gwt.diary.db.dao.DiaryDAOFactory;
 import com.google.gwt.diary.db.dao.PersonDAO;
 import com.google.gwt.diary.db.dao.PersonDAOFactory;
+import com.google.gwt.diary.db.dao.PropertyrightDAO;
+import com.google.gwt.diary.db.dao.PropertyrightDAOFactory;
+import com.google.gwt.diary.db.dao.PropertyrightholderDAO;
+import com.google.gwt.diary.db.dao.PropertyrightholderDAOFactory;
 import com.google.gwt.diary.server.GreetingServiceImpl;
 
 import model.Person;
+import model.Propertyright;
+import model.Propertyrightholder;
 
 public class DatabaseController { 
 	
@@ -66,5 +76,49 @@ public class DatabaseController {
 		}
 	
 		return res;
+	}
+	
+	public Boolean addNewHolder(Long id, String name, String surname,String email,String phone){
+		
+		PropertyrightholderDAO prhDao = PropertyrightholderDAOFactory.getPropertyrightholderDAO();
+		Propertyrightholder holder = new Propertyrightholder();
+		holder.setHolderId(id);
+		holder.setHolderName(name);
+		holder.setHolderSurname(surname);
+		holder.setHolderEMail(email);
+		holder.setHolderPhone(phone);
+
+		
+		int result = prhDao.insertPropertyrightholder(holder);
+		if (result==1){
+			System.out.println("Holder is added!!");
+			return true;
+		}else{ 
+			System.out.println("Holder could not be added!");
+			return false;
+		}
+	}
+	
+	public Boolean addNewPropertyright(Long id, String type){
+		
+		PropertyrightDAO prDao = PropertyrightDAOFactory.getPropertyRightDAO();
+		DiaryDAO dDAO = DiaryDAOFactory.getDiaryDAO();
+		
+		Propertyright propertyright = new Propertyright();
+		propertyright.setPropertyrightId(id);
+		propertyright.setPropertyrightDate(Calendar.getInstance().getTime());
+		propertyright.setType(type);
+		propertyright.setDiary(dDAO.getDiaryById(dDAO.getMaxDiaryId()));
+	
+
+		
+		int result = prDao.insertPropertyright(propertyright);
+		if (result==1){
+			System.out.println("Propertyright is added!!");
+			return true;
+		}else{ 
+			System.out.println("Propertyright could not be added!");
+			return false;
+		}
 	}
 }

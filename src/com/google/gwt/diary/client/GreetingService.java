@@ -14,5 +14,9 @@ public interface GreetingService extends RemoteService {
 	public ArrayList<String> takeLogin(String input1, String input2) throws IllegalArgumentException;
 	public String takeNewAccount(ArrayList<String> str) throws IllegalArgumentException;
 	public ArrayList<ArrayList<String>> viewDiary() throws IllegalArgumentException;
-	public String showDiaryContent(int id) throws IllegalArgumentException;
+	public String showDiaryContent(Long id) throws IllegalArgumentException;
+	public String takeNewHolder(ArrayList<String> str) throws IllegalArgumentException;
+	public String logout() throws IllegalArgumentException;
+	public String editDiary(Long diary_id, String input) throws IllegalArgumentException;
+	public String deleteDiary(Long diary_id) throws IllegalArgumentException;
 }

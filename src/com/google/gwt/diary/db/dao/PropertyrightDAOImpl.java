@@ -5,8 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+
 import model.Diary;
 import model.Propertyright;
+
 import com.google.gwt.diary.db.ConnectionManager;
 
 
@@ -149,6 +151,44 @@ public class PropertyrightDAOImpl implements PropertyrightDAO {
 		}
 	}
 
+	public long getMaxPropertyrightId(){
+		// TODO Auto-generated method stub
+		
+		long propertyright_id = 0;
+		ResultSet rs;
+	
+		try {
+			connection = getConnection();
+			String query = "select MAX(PROPERTYRIGHT_ID ) AS MAX_PROPERTYRIGHT_ID  from DIARY.PROPERTYRIGHT";
+			ps = connection.prepareStatement(query);
+				
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				propertyright_id = rs.getLong("MAX_PROPERTYRIGHT_ID");
+			}
+			
+			return propertyright_id;
+		
+		} catch (SQLException e) {
+			System.out.println("Can not get Connection");
+			e.printStackTrace();
+			return propertyright_id;
+		} finally {
+			try {
+				if(ps != null)
+					ps.clearParameters();
+					ps.close();
+				if(connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+	}
+	
 	private Connection getConnection() throws SQLException{
         Connection conn;
         conn = ConnectionManager.getInstance().getConnection();

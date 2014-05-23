@@ -64,16 +64,17 @@ public class TestDiary {
 		*/
 		
 		
-		/*
+		
 		///// deletion
-		int result2 = dDao.deleteDiary(1);
+		int result2 = dDao.deleteDiary(18);
 		if (result2==1){
 			System.out.println("diary deleted!!");
 		}else{ 
 			System.out.println("there is no diary for this id");
 		}
-		*/
+		
 		
 		
 	}
 }
+

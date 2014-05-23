@@ -1,7 +1,6 @@
 package com.google.gwt.diary.db.dao;
 
 import java.util.ArrayList;
-
 import model.Diary;
 
 
@@ -11,4 +10,5 @@ public interface DiaryDAO {
 	public Diary getDiaryById(long id);
 	public long getMaxDiaryId();
 	public ArrayList<Diary> getDiaryByUsername(String uname);
+	public int updateDiary(long id, String input);
 }

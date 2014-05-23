@@ -7,10 +7,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-
 import model.Diary;
 import model.Person;
-
 import com.google.gwt.diary.db.ConnectionManager;
 
 public class DiaryDAOImpl implements DiaryDAO {
@@ -269,6 +267,41 @@ public class DiaryDAOImpl implements DiaryDAO {
 				}	
 			}
 	}
+	
+	@Override
+	public int updateDiary(long id, String input) {
+		// TODO Auto-generated method stub
+		int queryResult = 0;
+		try {
+			connection = getConnection();
+			
+			String query = "update DIARY.DIARY set CONTENT=? where DIARY_ID=?";
+			ps = connection.prepareStatement(query);
+			
+			ps.setString(1, input);
+			ps.setLong(2, id);
+			
+			queryResult = ps.executeUpdate();
+			
+		} catch (SQLException e) {
+			System.out.println("Can not get Connection");
+			e.printStackTrace();
+		} finally {
+			try {
+				if(ps != null)
+					ps.clearParameters();
+					ps.close();
+				if(connection != null)
+					connection.close();
+		    } catch (SQLException e) {
+	            e.printStackTrace();
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+		}
+		return queryResult;
+	}
+	
 	
 	private Connection getConnection() throws SQLException{
         Connection conn;

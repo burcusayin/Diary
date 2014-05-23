@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import model.Propertyrightholder;
+
 import com.google.gwt.diary.db.ConnectionManager;
 
 public class PropertyrightholderDAOImpl implements PropertyrightholderDAO {
@@ -137,6 +139,45 @@ public class PropertyrightholderDAOImpl implements PropertyrightholderDAO {
 			}	
 		}
 	}
+	
+	public long getMaxPropertyrightholderId(){
+		// TODO Auto-generated method stub
+		
+		long propertyrightholder_id = 0;
+		ResultSet rs;
+	
+		try {
+			connection = getConnection();
+			String query = "select MAX(HOLDER_ID) AS MAX_HOLDER_ID from DIARY.PROPERTYRIGHTHOLDER";
+			ps = connection.prepareStatement(query);
+				
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				propertyrightholder_id = rs.getLong("MAX_HOLDER_ID");
+			}
+			
+			return propertyrightholder_id;
+		
+		} catch (SQLException e) {
+			System.out.println("Can not get Connection");
+			e.printStackTrace();
+			return propertyrightholder_id;
+		} finally {
+			try {
+				if(ps != null)
+					ps.clearParameters();
+					ps.close();
+				if(connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
+		}
+	}
+
 
 	private Connection getConnection() throws SQLException{
         Connection conn;

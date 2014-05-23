@@ -2,12 +2,12 @@ package com.google.gwt.diary.client.ui;
 
 import com.google.gwt.diary.client.RichTextToolbar;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -26,11 +26,7 @@ public class DiaryUI {
 	RichTextToolbar toolbar;
 	TextBox username;
 	TextBox password;
-	DialogBox dialogBox;
 	Button closeButton;
-	Label textToServerLabel;
-	HTML serverResponseLabel;
-	VerticalPanel dialogVPanel;
 	HTMLPanel panel;
 	FlexTable flexTable;
 	
@@ -42,6 +38,24 @@ public class DiaryUI {
 	TextBox usernameNew;
 	TextBox passwordNew;
 	FormPanel form;
+	
+	TextBox title;
+	TextBox holderName;
+	TextBox holderSurname;
+	TextBox holderEmail;
+	TextBox holderPhone;
+	Button closeButtonForHolder;
+	Button addButton;
+	Label holderNameLabel;
+	Label holderSurnameLabel;
+	Label holderEmailLabel;
+	Label holderPhoneLabel;
+	ListBox propertyrightListBox;
+	HTML uppertextForVPanel;
+	VerticalPanel vPanel;
+	Button logoutButton;
+	Button editButton;
+	Button deleteButton;
 	
 	public DiaryUI() {
 		super();
@@ -55,11 +69,7 @@ public class DiaryUI {
 		this.toolbar = new RichTextToolbar(area);
 		this.username = new TextBox();
 		this.password =  new TextBox();
-		this.dialogBox = new DialogBox();
 		this.closeButton = new Button("Close");
-		this.textToServerLabel =  new Label();
-		this.serverResponseLabel = new HTML();
-		this.dialogVPanel = new VerticalPanel();
 		this.name = new TextBox();
 		this.surname = new TextBox();
 		this.phone = new TextBox();
@@ -70,8 +80,27 @@ public class DiaryUI {
 		this.registerButton = new Button("Register");
 		this.form = new FormPanel();
 		this.flexTable = new FlexTable();
+		this.title = new TextBox();
+		this.holderName = new TextBox();
+		this.holderSurname = new TextBox();
+		this.holderEmail = new TextBox();
+		this.holderPhone = new TextBox();
+		this.closeButtonForHolder = new Button("No Thanks!");
+		this.addButton = new Button("Add");
+		this.holderNameLabel = new Label();
+		this.holderSurnameLabel = new Label();
+		this.holderEmailLabel = new Label();
+		this.holderPhoneLabel = new Label();
+		this.propertyrightListBox = new ListBox();
+		this.uppertextForVPanel = new HTML();
+		this.vPanel = new VerticalPanel();
+		this.logoutButton = new Button("Logout");
+		this.editButton = new Button("Edit");
+		this.deleteButton = new Button("Delete");
 	}
+	
 
+	
 	public void createUI() {
 		
 		this.username.setText("Username");
@@ -83,6 +112,10 @@ public class DiaryUI {
 		this.submitButton.addStyleName("submitButton");
 		this.addNewMember.addStyleName("registerButton");
 		this.backButton.addStyleName("backButton");
+		this.logoutButton.addStyleName("logoutButton");
+		this.editButton.addStyleName("editButton");
+		this.deleteButton.addStyleName("deleteButton");
+		
 		
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element;
@@ -96,43 +129,37 @@ public class DiaryUI {
 		RootPanel.get("passwordContainer").add(password);
 		RootPanel.get("submitButtonContainer").add(submitButton);	
 		RootPanel.get("registerButtonContainer").add(addNewMember);
-
+		RootPanel.get("logoutContainer").add(logoutButton);
+		RootPanel.get().add(editButton);
+		RootPanel.get().add(deleteButton);
+		
+		
 		// Focus the cursor on the name field when the app loads
 		this.username.setFocus(true);
 		this.password.setFocus(true);
 		this.submitButton.setEnabled(true);
 		this.submitButton.setFocus(true);
 		this.addNewMember.setFocus(true);
-		
-		this.dialogBox.setText("Remote Procedure Call");
-		this.dialogBox.setAnimationEnabled(true);
+		this.logoutButton.setFocus(true);
 	
 		// We can set the id of a widget by accessing its Element
 		this.closeButton.getElement().setId("closeButton");
-		
-		this.dialogVPanel.addStyleName("dialogVPanel");
-		this.dialogVPanel.add(new HTML("<b>Sending to the server:</b>"));
-		this.dialogVPanel.add(textToServerLabel);
-		this.dialogVPanel.add(new HTML("<br><b>Server replies:</b>"));
-		this.dialogVPanel.add(serverResponseLabel);
-		this.dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_RIGHT);
-		this.dialogVPanel.add(closeButton);
-		this.dialogBox.setWidget(dialogVPanel);
-
-		
+				
 		this.area.setVisible(false);
 		this.toolbar.setVisible(false);
 		this.saveButton.setVisible(false);
 		this.viewButton.setVisible(false);
-		
+		this.logoutButton.setVisible(false);
+		this.editButton.setVisible(false);
+		this.deleteButton.setVisible(false);
 	}
 	
 	public void createPlugins()
 	{
-		 String html =	"<a id='facebook' href='http://www.facebook.com/sharer.php?u=http://127.0.0.1:8888/Diary.html?gwt.codesvr=127.0.0.1:9997' target='_blank'  >"
-	    		    +  "<img src='http://www.simplesharebuttons.com/images/somacro/facebook.png' alt='Facebook' /></a>"
+		 String html =	//"<a id='facebook' href='http://www.facebook.com/sharer.php?u=http://127.0.0.1:8888/Diary.html?gwt.codesvr=127.0.0.1:9997' target='_blank'  >"
+	    		    //+  "<img src='http://www.simplesharebuttons.com/images/somacro/facebook.png' alt='Facebook' /></a>"
 	    
-	                +  "<a id='twitter' href='http://twitter.com/share?text=&url=' target='_blank'  >"
+	                  "<a id='twitter' href='http://twitter.com/share?text=&url=' target='_blank'  >"
 	    		    +  "<img src='http://www.simplesharebuttons.com/images/somacro/twitter.png' alt='Twitter' /></a>"
 	    		
 	    		
@@ -211,8 +238,86 @@ public class DiaryUI {
 		this.registerButton.setEnabled(false);
 		this.registerButton.setFocus(false);
 		this.registerButton.setVisible(false);
+		this.logoutButton.setVisible(true);
+		this.logoutButton.setEnabled(true);
+		this.logoutButton.setFocus(true);
+		this.editButton.setVisible(false);
+		this.deleteButton.setVisible(false);
 	}
 	
+public void createHolderForm(){
+		
+		uppertextForVPanel.setHTML("<h3>Add property right informations!</h3>");
+		vPanel.add(uppertextForVPanel);
+		
+		this.holderNameLabel.setText("Holder name :");
+		vPanel.add(holderNameLabel);
+		vPanel.add(holderName);
+		
+		this.holderSurnameLabel.setText("Holder surname : ");
+		vPanel.add(holderSurnameLabel);
+		vPanel.add(holderSurname);
+		
+		this.holderEmailLabel.setText("Holder email : ");
+		vPanel.add(holderEmailLabel);
+		vPanel.add(holderEmail);
+		
+		this.holderPhoneLabel.setText("Holder phone : ");
+		vPanel.add(holderPhoneLabel);
+		vPanel.add(holderPhone);
+		
+		
+		this.propertyrightListBox.addItem("Modify");
+		this.propertyrightListBox.addItem("Copy");
+		this.propertyrightListBox.addItem("View");
+		vPanel.add(propertyrightListBox);
+		
+		
+		RootPanel.get().add(vPanel);
+		RootPanel.get().add(addButton);
+		RootPanel.get().add(closeButtonForHolder);
+		
+		RootPanel.get().setWidgetPosition(vPanel, 600, 130);
+		RootPanel.get().setWidgetPosition(addButton,600, 430);
+		RootPanel.get().setWidgetPosition(closeButtonForHolder, 720, 430);
+		
+		this.vPanel.setVisible(true);
+		this.addButton.setVisible(true);
+		this.addButton.setEnabled(true);
+		this.addButton.setFocus(true);
+		this.closeButtonForHolder.setVisible(true);
+		this.closeButtonForHolder.setEnabled(true);
+		this.closeButtonForHolder.setFocus(true);
+	}
+
+
+	public void returnbackFromHolderForm()
+	{
+		this.vPanel.setVisible(false);
+		this.addButton.setVisible(false);
+		this.addButton.setFocus(false);
+		this.addButton.setEnabled(false);
+		this.closeButtonForHolder.setVisible(false);
+		this.closeButtonForHolder.setEnabled(false);
+		this.closeButtonForHolder.setFocus(false);
+		this.area.setVisible(true);
+		this.area.setHTML("");
+		this.toolbar.setVisible(true);
+		this.saveButton.setVisible(true);
+		this.saveButton.setFocus(true);
+		this.saveButton.setEnabled(true);
+		this.viewButton.setVisible(true);
+		this.viewButton.setFocus(true);
+		this.viewButton.setEnabled(true);
+		this.title.setVisible(true);
+		this.panel.setVisible(true);
+		this.logoutButton.setVisible(true);
+		this.logoutButton.setEnabled(true);
+		this.logoutButton.setFocus(true);
+		this.editButton.setVisible(false);
+		this.deleteButton.setVisible(false);
+	}
+
 	public void createDiaryTable()
 	{
 		
@@ -312,24 +417,126 @@ public class DiaryUI {
 		return this.password;
 	}
 
-	public DialogBox getDialogBox() {
-		return this.dialogBox;
-	}
-
 	public Button getCloseButton() {
 		return this.closeButton;
 	}
 
-	public Label getTextToServerLabel() {
-		return this.textToServerLabel;
+	public TextBox getTitle() {
+		return title;
 	}
 
-	public HTML getServerResponseLabel() {
-		return this.serverResponseLabel;
+	public void setTitle(TextBox title) {
+		this.title = title;
 	}
 
-	public VerticalPanel getDialogVPanel() {
-		return this.dialogVPanel;
+	public TextBox getHolderName() {
+		return holderName;
 	}
 
+	public void setHolderName(TextBox holderName) {
+		this.holderName = holderName;
+	}
+
+	public TextBox getHolderSurname() {
+		return holderSurname;
+	}
+
+	public void setHolderSurname(TextBox holderSurname) {
+		this.holderSurname = holderSurname;
+	}
+
+	public TextBox getHolderEmail() {
+		return holderEmail;
+	}
+
+	public void setHolderEmail(TextBox holderEmail) {
+		this.holderEmail = holderEmail;
+	}
+
+	public TextBox getHolderPhone() {
+		return holderPhone;
+	}
+
+	public void setHolderPhone(TextBox holderPhone) {
+		this.holderPhone = holderPhone;
+	}
+
+
+	public Button getAddButton() {
+		return addButton;
+	}
+
+	public void setAddButton(Button addButton) {
+		this.addButton = addButton;
+	}
+
+	public ListBox getPropertyrightListBox() {
+		return propertyrightListBox;
+	}
+
+	public void setPropertyrightListBox(ListBox propertyrightListBox) {
+		this.propertyrightListBox = propertyrightListBox;
+	}
+
+	public Button getCloseButtonForHolder() {
+		return closeButtonForHolder;
+	}
+
+	public void setCloseButtonForHolder(Button closeButtonForHolder) {
+		this.closeButtonForHolder = closeButtonForHolder;
+	}
+
+	public VerticalPanel getvPanel() {
+		return vPanel;
+	}
+
+	public void setvPanel(VerticalPanel vPanel) {
+		this.vPanel = vPanel;
+	}
+
+
+	public HTMLPanel getPanel() {
+		return panel;
+	}
+
+
+	public void setPanel(HTMLPanel panel) {
+		this.panel = panel;
+	}
+
+
+	public Button getLogoutButton() {
+		return logoutButton;
+	}
+
+
+	public void setLogoutButton(Button logoutButton) {
+		this.logoutButton = logoutButton;
+	}
+
+
+
+	public Button getEditButton() {
+		return editButton;
+	}
+
+
+
+	public void setEditButton(Button editButton) {
+		this.editButton = editButton;
+	}
+
+
+
+	public Button getDeleteButton() {
+		return deleteButton;
+	}
+
+
+
+	public void setDeleteButton(Button deleteButton) {
+		this.deleteButton = deleteButton;
+	}
+
+	
 }

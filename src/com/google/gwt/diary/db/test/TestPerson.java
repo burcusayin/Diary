@@ -58,7 +58,7 @@ public class TestPerson {
 		
 		
 		/*
-		int result2 = pDao.deletePerson("pelin");
+		int result2 = pDao.deletePerson("lyl");
 		if (result2==1){ 
 			System.out.println("person deleted!!");
 		}else{ 
@@ -67,3 +67,5 @@ public class TestPerson {
 		*/
 	}
 }
+
+
