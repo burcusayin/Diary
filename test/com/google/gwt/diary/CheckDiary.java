@@ -2,6 +2,8 @@ package com.google.gwt.diary;
 
 import java.util.ArrayList;
 
+import com.google.gwt.diary.db.dao.DiaryDAO;
+import com.google.gwt.diary.db.dao.DiaryDAOFactory;
 import com.google.gwt.diary.server.GreetingServiceImpl;
 
 import org.junit.Test;
@@ -41,7 +43,7 @@ public class CheckDiary {
 		ArrayList<String> result = new ArrayList<>();
 		GreetingServiceImpl impl = new GreetingServiceImpl();
 		
-		result = impl.takeLogin("iyte", "ceng");
+		result = impl.takeLogin("bc", "bc10418560477");
 		
 		if(result.get(0) == "OK"){
 			System.out.println("it is a valid login");
@@ -54,52 +56,83 @@ public class CheckDiary {
 	
 	@Test
 	public void testDiary(){
-		
-		String result;
+		ArrayList<String> result;
 		GreetingServiceImpl impl = new GreetingServiceImpl();
-		
-		result = impl.takeDiary("Hello world");
-		//result = impl.takeDiary("");
-		
-		if(result == "OK"){
-			System.out.println("it is a valid diary");
-		}
-		else{
-			fail("Diary area is empty");
-		}
+		result = impl.takeLogin("bc", "bc10418560477");
+		if(result.get(0).equalsIgnoreCase("OK"))
+		{
+			if(!result.get(1).equalsIgnoreCase("Wrong username or password!"))
+			{
+				String r = impl.takeDiary("testDiary!");
+				if(r == "OK"){
+					System.out.println("it is a valid diary");
+				}
+				else{
+					fail("Diary area is empty");
+				}
+			}
+		}	
 	}
 	
 	@Test
 	public void testViewDiary(){
 		
-		ArrayList<ArrayList<String>> result;
+		ArrayList<String> result;
 		GreetingServiceImpl impl = new GreetingServiceImpl();
-		
-		result = impl.viewDiary();
-		
-		if(result.size() != 0){
-			System.out.println("View is successful");
-		}
-		else{
-			System.out.println("there is no diary to view!");
-		}
+		result = impl.takeLogin("bc", "bc10418560477");
+		if(result.get(0).equalsIgnoreCase("OK"))
+		{
+			if(!result.get(1).equalsIgnoreCase("Wrong username or password!"))
+			{
+				String r = impl.takeDiary("testDiaryView01!");
+				if(r.equalsIgnoreCase("OK"))
+				{
+					ArrayList<ArrayList<String>> b = impl.viewDiary();
+					
+					if(b.size() != 0){
+						System.out.println("View is successful");
+					}
+					else{
+						fail("there is no diary to view!");
+					}
+				}
+			}
+		}	
 	}
 	
 	@Test
 	public void testShowDiaryContent(){
 		
-		String result;
-		long id = 1;
+		ArrayList<String> result;
 		GreetingServiceImpl impl = new GreetingServiceImpl();
-		
-		result = impl.showDiaryContent(id);
-		
-		if(result != null){
-			System.out.println("Content is: " + result);
-		}
-		else{
-			fail("there is no content to show!");
-		}
+		DiaryDAO dDao = DiaryDAOFactory.getDiaryDAO();
+		result = impl.takeLogin("bc", "bc10418560477");
+		if(result.get(0).equalsIgnoreCase("OK"))
+		{
+			if(!result.get(1).equalsIgnoreCase("Wrong username or password!"))
+			{
+				String r = impl.takeDiary("testShowDiary01!");
+				if(r.equalsIgnoreCase("OK"))
+				{
+					ArrayList<ArrayList<String>> b = impl.viewDiary();
+					
+					if(b.size() != 0){
+						long id = dDao.getMaxDiaryId();
+						String resul = impl.showDiaryContent(id);
+						
+						if(resul != null){
+							System.out.println("Content is: " + resul);
+						}
+						else{
+							fail("there is no content to show!");
+						}
+					}
+					else{
+						fail("there is no diary to view!");
+					}
+				}
+			}
+		}	
 	}
 	
 	@Test
@@ -108,8 +141,8 @@ public class CheckDiary {
 		String result;
 		GreetingServiceImpl impl = new GreetingServiceImpl();
 		ArrayList<String> list = new ArrayList<String>();
-		list.add("zyn");
-		list.add("zyn03");
+		list.add("zynTest01");
+		list.add("passTest02");
 		list.add("sym");
 		list.add("zeynep");
 		list.add("54122");
@@ -149,35 +182,56 @@ public class CheckDiary {
 	@Test
 	public void testEditDiary(){
 		
-		String result;
+		ArrayList<String> result;
+		DiaryDAO dDao = DiaryDAOFactory.getDiaryDAO();
 		GreetingServiceImpl impl = new GreetingServiceImpl();
-		long id = 1;
-		String input = "editedDiary";
-
-		result = impl.editDiary(id,input);
-		
-		if(result.equalsIgnoreCase("OK")){
-			System.out.println("Diary is edited!");
-		}
-		else{
-			fail("Diary couldn't be edited!");
-		}
+		result = impl.takeLogin("bc", "bc10418560477");
+		if(result.get(0).equalsIgnoreCase("OK"))
+		{
+			if(!result.get(1).equalsIgnoreCase("Wrong username or password!"))
+			{
+				String r = impl.takeDiary("testDiary01!");
+				if(r.equalsIgnoreCase("OK"))
+				{
+					long id = dDao.getMaxDiaryId();
+					String b = impl.editDiary(id, "testDiary01Edited");
+					
+					if(b.equalsIgnoreCase("OK")){
+						System.out.println("Diary is edited!");
+					}
+					else{
+						fail("Diary couldn't be edited!");
+					}
+				}
+			}
+		}	
 	}
 	
 	@Test
 	public void testDeleteDiary(){
 		
-		String result;
+		ArrayList<String> result;
+		DiaryDAO dDao = DiaryDAOFactory.getDiaryDAO();
 		GreetingServiceImpl impl = new GreetingServiceImpl();
-		long id = 1;
-
-		result = impl.deleteDiary(id);
-		
-		if(result.equalsIgnoreCase("OK")){
-			System.out.println("Diary is deleted!");
-		}
-		else{
-			fail("Diary couldn't be deleted!");
-		}
+		result = impl.takeLogin("bc", "bc10418560477");
+		if(result.get(0).equalsIgnoreCase("OK"))
+		{
+			if(!result.get(1).equalsIgnoreCase("Wrong username or password!"))
+			{
+				String r = impl.takeDiary("testDiary!");
+				if(r.equalsIgnoreCase("OK"))
+				{
+					long id = dDao.getMaxDiaryId();
+					String b = impl.deleteDiary(id);
+					
+					if(b.equalsIgnoreCase("OK")){
+						System.out.println("Diary is deleted!");
+					}
+					else{
+						fail("Diary couldn't be deleted!");
+					}
+				}
+			}
+		}	
 	}
 }

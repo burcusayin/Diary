@@ -210,6 +210,7 @@ public class Diary implements EntryPoint {
 				ui.getPassword().setFocus(false);
 				ui.getPassword().setVisible(false);
 				ui.getAddNewMember().setVisible(false);
+				ui.getLogoutButton().setVisible(false);
 				ui.createForm();
 				
 			}
@@ -261,6 +262,9 @@ public class Diary implements EntryPoint {
 								if(result.equalsIgnoreCase(res))
 								{
 									ui.returnback();
+									ui.getLogoutButton().setVisible(false);
+									ui.getLogoutButton().setEnabled(false);
+									ui.getLogoutButton().setFocus(false);
 								}
 								else
 								{
@@ -412,6 +416,7 @@ public class Diary implements EntryPoint {
 												while(ui.getFlexTable().getRowCount() != 1)
 												{
 													ui.getFlexTable().removeRow(rows - 1);
+													rows--;
 												}
 											}
 											int l = result.size();
@@ -421,16 +426,14 @@ public class Diary implements EntryPoint {
 												String id = result.get(i).get(0);
 												String title = result.get(i).get(1);
 												String date = result.get(i).get(2);
-												String time = result.get(i).get(3);
-												String uname = result.get(i).get(4);
+												String uname = result.get(i).get(3);
 												
 												int numRows = ui.getFlexTable().getRowCount();
 									
 												ui.getFlexTable().setText(numRows, 0, id);
 												ui.getFlexTable().setText(numRows, 1, title);
 												ui.getFlexTable().setText(numRows, 2, date);
-												ui.getFlexTable().setText(numRows, 3, time);
-												ui.getFlexTable().setText(numRows, 4, uname);
+												ui.getFlexTable().setText(numRows, 3, uname);
 												
 												i++;
 											}

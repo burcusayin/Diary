@@ -129,9 +129,9 @@ public class DiaryUI {
 		RootPanel.get("passwordContainer").add(password);
 		RootPanel.get("submitButtonContainer").add(submitButton);	
 		RootPanel.get("registerButtonContainer").add(addNewMember);
+		RootPanel.get("editButtonContainer").add(editButton);
+		RootPanel.get("deleteButtonContainer").add(deleteButton);
 		RootPanel.get("logoutContainer").add(logoutButton);
-		RootPanel.get().add(editButton);
-		RootPanel.get().add(deleteButton);
 		
 		
 		// Focus the cursor on the name field when the app loads
@@ -235,7 +235,7 @@ public class DiaryUI {
 		this.addNewMember.setEnabled(true);
 		this.addNewMember.setFocus(true);
 		this.addNewMember.setVisible(true);
-		this.registerButton.setEnabled(false);
+		this.registerButton.setEnabled(true);
 		this.registerButton.setFocus(false);
 		this.registerButton.setVisible(false);
 		this.logoutButton.setVisible(true);
@@ -325,12 +325,11 @@ public void createHolderForm(){
 		flexTable.setText(0, 0, "DIARY_ID");
 		flexTable.setText(0, 1, "TITLE");
 		flexTable.setText(0, 2, "DIARY_DATE");
-		flexTable.setText(0, 3, "DIARY_TIME");
-		flexTable.setText(0, 4, "USERNAME");
+		flexTable.setText(0, 3, "USERNAME");
 		RootPanel.get().add(backButton);
 		RootPanel.get().add(flexTable);
 		RootPanel.get().setWidgetPosition(backButton, 610, 550);
-		RootPanel.get().setWidgetPosition(flexTable, 500, 250);
+		RootPanel.get().setWidgetPosition(flexTable, 540, 170);
 		backButton.setVisible(true);
 		flexTable.setVisible(true);
 	}

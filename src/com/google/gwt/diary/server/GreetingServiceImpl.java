@@ -114,13 +114,11 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 				String id = "" + dList.get(i).getDiaryId();
 				String title = "" + dList.get(i).getTitle();
 				String date = "" + dList.get(i).getDiaryDate();
-				String time = dList.get(i).getDiaryTime().toString();
 				String uname = "" + dList.get(i).getPerson().getUsername();
 				
 				strList.add(id);
 				strList.add(title);
 				strList.add(date);
-				strList.add(time);
 				strList.add(uname);
 				listt.add(strList);
 				
